@@ -1,0 +1,14 @@
+{
+  "buildCommand": "cd web && npm run build",
+  "outputDirectory": "web/dist",
+  "framework": "react",
+  "installCommand": "cd web && npm install",
+  "rootDirectory": ".",
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/web/dist/index.html",
+      "status": 200
+    }
+  ]
+}
