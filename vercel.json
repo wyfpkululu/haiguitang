@@ -1,22 +1,21 @@
 {
-  "buildCommand": "cd web && npm run build",
-  "outputDirectory": "web/dist",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "framework": "react",
-  "installCommand": "cd web && npm install",
-  "rootDirectory": ".",
+  "installCommand": "npm install",
   "functions": {
-    "web/api/*.js": {
+    "api/*.js": {
       "runtime": "nodejs18.x"
     }
   },
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "web/api/$1.js"
+      "dest": "api/$1.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/web/dist/index.html",
+      "dest": "/index.html",
       "status": 200
     }
   ]
