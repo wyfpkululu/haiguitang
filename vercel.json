@@ -7,7 +7,7 @@
       "config": {
         "installCommand": "npm install",
         "buildCommand": "npm run build",
-        "distDir": "dist"
+        "distDir": "web/dist"
       }
     },
     {
@@ -22,11 +22,11 @@
     },
     {
       "src": "/assets/(.*)",
-      "dest": "web/dist/assets/$1"
+      "dest": "/assets/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "web/dist/index.html",
+      "dest": "/index.html",
       "status": 200
     }
   ]
