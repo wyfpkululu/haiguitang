@@ -4,7 +4,16 @@
   "framework": "react",
   "installCommand": "cd web && npm install",
   "rootDirectory": ".",
+  "functions": {
+    "web/api/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "web/api/$1.js"
+    },
     {
       "src": "/(.*)",
       "dest": "/web/dist/index.html",
