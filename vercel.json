@@ -5,9 +5,7 @@
       "src": "web/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "installCommand": "npm install",
-        "buildCommand": "npm run build",
-        "distDir": "web/dist"
+        "distDir": "dist"
       }
     },
     {
@@ -21,13 +19,8 @@
       "dest": "api/$1.js"
     },
     {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html",
-      "status": 200
+      "src": "^(?!/api/).*",
+      "dest": "web/dist/index.html"
     }
   ]
 }
