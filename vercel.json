@@ -25,7 +25,7 @@
       "dest": "web/dist/assets/$1"
     },
     {
-      "src": "/(.*)\.(js|css|svg|png|jpg|jpeg|gif|ico)",
+      "src": "/(.*)\\.(js|css|svg|png|jpg|jpeg|gif|ico)",
       "dest": "web/dist/$1.$2"
     },
     {
