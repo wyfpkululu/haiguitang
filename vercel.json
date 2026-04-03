@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "package.json",
+      "src": "web/package.json",
       "use": "@vercel/static-build",
       "config": {
         "installCommand": "npm install",
@@ -22,8 +22,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html",
-      "status": 200
+      "dest": "web/dist/index.html"
     }
   ]
 }
