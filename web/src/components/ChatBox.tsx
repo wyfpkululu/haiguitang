@@ -55,6 +55,49 @@ function createMessage(role: 'user' | 'assistant', content: string): TMessage {
   }
 }
 
+/**
+ * 根据 AI 回答生成引导提示。
+ * @param {string} answer AI 的回答
+ * @param {number} messageCount 当前消息数量
+ * @returns {string}
+ */
+function generateGuidance(answer: string, messageCount: number): string {
+  const guidances = {
+    '是': [
+      '✓ 这个方向对了！继续深入探索这个线索。',
+      '✓ 很好！可以尝试追问更多细节。',
+      '✓ 正确！这个线索很重要，继续挖掘。',
+    ],
+    '否': [
+      '✗ 这个方向不对，尝试换个角度思考。',
+      '✗ 不是这样，重新审视故事中的细节。',
+      '✗ 排除这个可能，关注其他线索。',
+    ],
+    '无关': [
+      '○ 这个问题与汤底无关，关注故事的核心细节。',
+      '○ 尝试从人物关系、时间地点入手。',
+      '○ 思考故事中的异常之处。',
+    ],
+  }
+
+  const hints = [
+    '💡 提示：关注故事中的时间、地点、人物关系。',
+    '💡 提示：思考事件发生的因果关系。',
+    '💡 提示：注意故事中的异常细节。',
+    '💡 提示：尝试从不同角度提问。',
+  ]
+
+  const answerGuidances = guidances[answer as keyof typeof guidances] || []
+  const randomGuidance = answerGuidances[Math.floor(Math.random() * answerGuidances.length)]
+  
+  if (messageCount > 0 && messageCount % 3 === 0) {
+    const randomHint = hints[Math.floor(Math.random() * hints.length)]
+    return `${randomGuidance}\n${randomHint}`
+  }
+  
+  return randomGuidance
+}
+
 
 
 /**
@@ -192,7 +235,9 @@ export function ChatBox({ story, messages, onMessagesChange }: TChatBoxProps) {
         setError('AI 回答不符合规范，请重新提问。')
       } else if (['是', '否', '无关'].includes(answer)) {
         const assistantMessage = createMessage('assistant', answer)
-        onMessagesChange([...messages, userMessage, assistantMessage])
+        const guidance = generateGuidance(answer, messages.length)
+        const guidanceMessage = createMessage('assistant', guidance)
+        onMessagesChange([...messages, userMessage, assistantMessage, guidanceMessage])
       } else {
         // 回答不符合规范，提示用户重新提问
         const errorMessage = createMessage('assistant', '抱歉，我无法理解你的问题，请尝试用更清晰的方式重新提问。')
