@@ -56,12 +56,15 @@ function createMessage(role: 'user' | 'assistant', content: string): TMessage {
 }
 
 /**
- * 根据 AI 回答生成引导提示。
+ * 根据 AI 回答和汤底内容生成引导提示。
  * @param {string} answer AI 的回答
  * @param {number} messageCount 当前消息数量
+ * @param {TStory} story 当前故事
  * @returns {string}
  */
-function generateGuidance(answer: string, messageCount: number): string {
+function generateGuidance(answer: string, messageCount: number, story: TStory): string {
+  const bottom = story.bottom || ''
+  
   const guidances = {
     '是': [
       '✓ 这个方向对了！继续深入探索这个线索。',
@@ -80,18 +83,41 @@ function generateGuidance(answer: string, messageCount: number): string {
     ],
   }
 
-  const hints = [
-    '💡 提示：关注故事中的时间、地点、人物关系。',
-    '💡 提示：思考事件发生的因果关系。',
-    '💡 提示：注意故事中的异常细节。',
-    '💡 提示：尝试从不同角度提问。',
-  ]
+  const bottomHints = []
+  
+  if (bottom.includes('男') || bottom.includes('女')) {
+    bottomHints.push('💡 提示：关注故事中人物的性别。')
+  }
+  if (bottom.includes('死') || bottom.includes('杀') || bottom.includes('谋')) {
+    bottomHints.push('💡 提示：思考死亡或谋杀的原因和方式。')
+  }
+  if (bottom.includes('钱') || bottom.includes('财') || bottom.includes('富')) {
+    bottomHints.push('💡 提示：关注金钱或财富相关的线索。')
+  }
+  if (bottom.includes('爱') || bottom.includes('情') || bottom.includes('恋')) {
+    bottomHints.push('💡 提示：思考情感关系对事件的影响。')
+  }
+  if (bottom.includes('时间') || bottom.includes('时') || /\d+点/.test(bottom)) {
+    bottomHints.push('💡 提示：注意故事中的时间线索。')
+  }
+  if (bottom.includes('地点') || bottom.includes('在') || bottom.includes('处')) {
+    bottomHints.push('💡 提示：关注事件发生的地点。')
+  }
+  
+  if (bottomHints.length === 0) {
+    bottomHints.push(
+      '💡 提示：关注故事中的时间、地点、人物关系。',
+      '💡 提示：思考事件发生的因果关系。',
+      '💡 提示：注意故事中的异常细节。',
+      '💡 提示：尝试从不同角度提问。',
+    )
+  }
 
   const answerGuidances = guidances[answer as keyof typeof guidances] || []
   const randomGuidance = answerGuidances[Math.floor(Math.random() * answerGuidances.length)]
   
   if (messageCount > 0 && messageCount % 3 === 0) {
-    const randomHint = hints[Math.floor(Math.random() * hints.length)]
+    const randomHint = bottomHints[Math.floor(Math.random() * bottomHints.length)]
     return `${randomGuidance}\n${randomHint}`
   }
   
@@ -235,7 +261,7 @@ export function ChatBox({ story, messages, onMessagesChange }: TChatBoxProps) {
         setError('AI 回答不符合规范，请重新提问。')
       } else if (['是', '否', '无关'].includes(answer)) {
         const assistantMessage = createMessage('assistant', answer)
-        const guidance = generateGuidance(answer, messages.length)
+        const guidance = generateGuidance(answer, messages.length, story)
         const guidanceMessage = createMessage('assistant', guidance)
         onMessagesChange([...messages, userMessage, assistantMessage, guidanceMessage])
       } else {
